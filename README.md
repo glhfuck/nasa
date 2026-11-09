@@ -29,6 +29,10 @@ A small panel shows every key live: what's set, what's missing, what's
 mistyped. Ship code and config separately, turn things off without
 redeploying, get your Friday evenings back.
 
+<img src="assets/ui.png" alt="UI DEMO">
+
+---
+
 - [Install](#install)
 - [How it works](#how-it-works)
 - [1. UFO — live values](#1-ufo--live-values)
@@ -41,10 +45,6 @@ redeploying, get your Friday evenings back.
 - [Development](#development)
 - [Stability](#stability)
 - [License](#license)
-
----
-
-<img src="assets/ui.png" alt="UI DEMO">
 
 ## Install
 

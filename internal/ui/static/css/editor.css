@@ -1,0 +1,280 @@
+/* Folded via 0fr -> 1fr grid rows so sibling rows animate smoothly on open/close. */
+.inline-edit-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    grid-column: 1 / -1;
+    min-height: 0;
+    padding: 0 16px;
+    background: var(--hover);
+    /* Above the indent guides (::before on folders): they span the whole
+       folder height and would otherwise draw over the open editor. */
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid transparent;
+    transition: grid-template-rows 0.22s ease, visibility 0s linear 0.22s,
+        padding 0.22s ease, border-color 0.2s ease;
+}
+
+.inline-edit-panel > .edit-form {
+    overflow: hidden;
+    min-height: 0;
+}
+
+.config-row.editing + .inline-edit-panel {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    padding: 16px 16px 12px;
+    border-top-color: var(--border);
+    transition: grid-template-rows 0.22s ease, padding 0.22s ease,
+        border-color 0.2s ease;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.edit-form-row {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    align-items: start;
+    gap: 12px;
+}
+
+.edit-label {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.edit-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.edit-input-wrapper.full-width {
+    grid-column: 1 / -1;
+}
+
+.type-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.key-description {
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+/* Ghost default for code-only (yellow) keys. */
+.edit-form .json-editor:empty:before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Primitive editor - single line */
+.edit-input.primitive-editor {
+    height: 36px;
+    line-height: 1.5;
+    padding: 6px 10px;
+}
+
+/* JSON Editor with syntax highlighting */
+.json-editor-wrapper {
+    position: relative;
+    min-height: 200px;
+    max-height: 400px;
+}
+
+.json-editor {
+    min-height: 200px;
+    max-height: 400px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    background: var(--card-bg);
+    color: var(--text);
+    overflow: auto;
+    outline: none;
+    transition: var(--transition);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.json-editor:focus {
+    border-color: var(--focus);
+    box-shadow: none;
+}
+
+.json-editor .hljs-keyword { color: var(--type-boolean); }
+.json-editor .hljs-string { color: var(--type-string); }
+.json-editor .hljs-number { color: var(--type-number); }
+.json-editor .hljs-literal { color: var(--type-boolean); }
+.json-editor .hljs-punctuation { color: var(--text-muted); }
+.json-editor .hljs-attr { color: var(--text); }
+
+/* Primitive editors share the PRE + hljs pipeline, but stay one row
+   tall (the roomy 200px box is for structures).
+   Long values wrap and grow, capped like the create card. */
+.json-editor.primitive-editor {
+    min-height: 36px;
+    max-height: 160px;
+    padding: 7px 12px;
+}
+
+.edit-input {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+}
+.edit-input:focus {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: none;
+}
+
+.edit-input.error {
+    border-color: var(--danger);
+}
+
+.edit-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+}
+
+.edit-actions .btn {
+    flex-shrink: 0;
+}
+
+/* Commit-review split: was | became, changed lines toned. */
+.commit-review {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.commit-review[hidden] {
+    display: none;
+}
+
+.diff-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.diff-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.diff-title {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.diff-was,
+.diff-became {
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    background: var(--card-bg);
+    color: var(--text);
+    overflow: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 60px;
+    max-height: 300px;
+}
+
+.diff-line {
+    padding: 0 4px;
+    border-radius: var(--radius-xs);
+}
+
+.diff-del {
+    background: rgba(220, 38, 38, 0.12);
+}
+
+.diff-add {
+    background: rgba(5, 150, 105, 0.12);
+}
+
+/* Charcoal needs stronger toning to read against the background. */
+[data-theme="dark"] .diff-del {
+    background: rgba(255, 82, 82, 0.18);
+}
+
+[data-theme="dark"] .diff-add {
+    background: rgba(0, 230, 118, 0.18);
+}
+
+@media (max-width: 768px) {
+    .diff-split {
+        grid-template-columns: 1fr;
+    }
+}
+
+[data-theme="dark"] .edit-input {
+    background: #1e1e24;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+/* Same specificity tie as light: the dark base sits later in the file,
+   so focus needs its own dark rule to win. */
+[data-theme="dark"] .edit-input:focus {
+    border-color: var(--focus);
+}
+
+/* Error outline always wins, in both themes, focused or not, card or
+   row: one !important rule instead of an order-fragile specificity chain. */
+.edit-input.error,
+.json-editor.error {
+    border-color: var(--danger) !important;
+}
+
+/* Create-card fields sit on var(--border), so the standard border is
+   invisible against the card: one step darker keeps the outline
+   (both themes via the token). Focus follows so it keeps its color;
+   errors are covered by the global !important rule above. */
+.create-form .edit-input {
+    border-color: var(--border-strong);
+}
+
+[data-theme="dark"] .create-form .edit-input {
+    border-color: var(--border-strong);
+}
+
+.create-form .edit-input:focus {
+    border-color: var(--focus);
+}

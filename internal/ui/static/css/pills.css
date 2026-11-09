@@ -1,0 +1,95 @@
+/* Array/object pills, JSON colors, truncation dots */
+
+/* Pill styles for array/object previews: single line, truncate overflow */
+.pill-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    align-items: center;
+    overflow: hidden;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
+    font-size: 0.7rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    white-space: nowrap;
+    border: 1px solid;
+    transition: var(--transition);
+    background: transparent;
+    flex-shrink: 0;
+}
+
+/* Long pills are capped (with ellipsis), never crushed: keys stay readable */
+.pill-truncate > span {
+    max-width: 320px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Item pills share the map pill border; inner spans carry the type colors */
+.pill-string-element,
+.pill-number-element,
+.pill-boolean-element,
+.pill-null-element,
+.pill-array-element,
+.pill-object-element {
+    border-color: var(--border);
+}
+
+.pill-kv {
+    border-color: var(--border);
+}
+
+.pill-key {
+    font-weight: 600;
+    color: var(--text);
+    padding-right: 2px;
+    flex-shrink: 0;
+}
+
+.pill-val {
+    margin-left: 2px;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.pill-more {
+    color: var(--text-muted);
+    border-color: var(--border);
+    padding: 2px 10px;
+    flex-shrink: 0;
+}
+
+.pill-container > .pill {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.pill-container .json-string { color: var(--type-string); }
+.pill-container .json-number { color: var(--type-number); }
+.pill-container .json-boolean { color: var(--type-boolean); }
+.pill-container .json-null { color: var(--type-null); }
+.pill-container .json-array { color: var(--type-null); }
+.pill-container .json-object { color: var(--type-null); }
+
+/* Top-level scalar values share the map value colors */
+.config-value .json-string { color: var(--type-string); }
+.config-value .json-number { color: var(--type-number); }
+.config-value .json-boolean { color: var(--type-boolean); }
+.config-value .json-null { color: var(--type-null); }
+.config-value .json-array { color: var(--type-null); }
+.config-value .json-object { color: var(--type-null); }
+
+/* Truncation dots for long strings */
+.truncated-dots { color: #000; }
+
+[data-theme="dark"] .truncated-dots {
+    color: #e5e7eb;
+}

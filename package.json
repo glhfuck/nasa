@@ -1,0 +1,16 @@
+{
+    "name": "nasa-config-ui-tests",
+    "private": true,
+    "type": "module",
+    "description": "Test-only dependencies for the nasa web UI (jsdom DOM tests, playwright-core e2e). No runtime bundle.",
+    "scripts": {
+        "test:js": "node --test internal/ui/static/js/",
+        "test:e2e": "node --test ui/e2e/",
+        "test": "npm run test:js && npm run test:e2e",
+        "check:js": "for f in internal/ui/static/js/*.js ui/e2e/*.js; do node --check \"$f\" || exit 1; done; echo JS_SYNTAX_OK"
+    },
+    "devDependencies": {
+        "jsdom": "^27.0.0",
+        "playwright-core": "1.64.0"
+    }
+}

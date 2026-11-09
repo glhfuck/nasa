@@ -1,0 +1,468 @@
+/* Reset, page, toolbar, buttons, floating toggles, toast, loading */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Reserve the scrollbar gutter up front: when content grows past the
+   viewport (e.g. unfolding a big folder), the appearing scrollbar would
+   otherwise steal ~15px of width and shift the whole UI sideways. */
+html {
+    scrollbar-gutter: stable;
+}
+
+@supports not (scrollbar-gutter: stable) {
+    html {
+        overflow-y: scroll;
+    }
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Create widget: fixed slot above the view toggle. Collapsed it is just
+   the round + button; .expanded morphs into the card (width 32->300,
+   grid-rows unfold, fab fades out). Growth stays monotonic (fixed 276px
+   form width, preventScroll focus) so open and close never overshoot. */
+.create-widget {
+    position: fixed;
+    left: 16px;
+    bottom: 96px;
+    z-index: var(--z-fab);
+    display: flex;
+    flex-direction: column;
+    width: 32px;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    border-radius: var(--radius-xs);
+    transition: width 0.22s ease, padding 0.2s ease, background-color 0.2s ease;
+}
+
+.create-widget.expanded {
+    width: 300px;
+    padding: 12px;
+    background: var(--border);
+    border-radius: var(--radius-xs);
+    transition: width 0.22s ease, padding 0.2s ease, background-color 0.2s ease;
+    animation: addFade 0.15s ease-out;
+}
+
+@keyframes addFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Allow focus/hover shadows to paint outside once the open transition finishes. */
+.create-widget.expanded.settled {
+    overflow: visible;
+}
+
+/* Same for the slide clipper: its box ends flush with the button's right
+   and bottom edges, so any downward/rightward shadow is cut there while
+   top/left show fine. Settled, the slide is done and nothing needs
+   clipping; every collapse path drops .settled first, so the close
+   animation still clips. */
+.create-widget.expanded.settled > .create-tray > .create-clip {
+    overflow: visible;
+}
+
+/* Pull FAB out of flow height (-32px) smoothly as the tray expands. */
+.create-widget .create-fab {
+    transition: margin-bottom 0.22s ease, opacity 0.15s ease, background-color 0.2s ease;
+}
+.create-widget.expanded .create-fab {
+    margin-bottom: -32px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.create-tray {
+    display: grid;
+    grid-template-rows: 0fr;
+    min-height: 0;
+    visibility: hidden;
+    transition: grid-template-rows 0.22s ease, visibility 0s linear 0.22s;
+}
+
+.create-widget.expanded .create-tray {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows 0.22s ease;
+}
+
+.create-clip {
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* Fixed width prevents text reflow while .create-widget animates width. */
+.create-form {
+    display: flex;
+    width: 276px;
+    flex: none;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.create-form .edit-input {
+    width: 100%;
+}
+
+/* Create value editor: row JSON-editor look. Empty shows the placeholder. */
+.create-form .json-editor {
+    max-height: 160px;
+    /* Single-line height matches the key input (36px): content ~19px +
+       this padding, min-height binds exact. Row editors keep roomier 12px. */
+    padding: 7px 12px;
+    min-height: 36px;
+}
+
+/* Create scrim: transparent shield under the open card; outside
+   presses land here and dismiss. [hidden] keeps it out while shut. */
+.create-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-scrim);
+    background: transparent;
+}
+
+input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.create-form .json-editor:empty:before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Create actions row (same Cancel-then-primary order as row editors):
+   Cancel sits left, Create stays pinned to the right edge. Radii are the
+   shared btn/input ones — no card-specific rounding. */
+.create-form-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.create-form-actions .btn-secondary {
+    background: var(--card-bg);
+}
+
+.search-box {
+    width: 50%;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    pointer-events: none;
+    display: flex;
+}
+
+.search-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 11px 15px 11px 37px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    transition: var(--transition);
+    background: var(--card-bg);
+    box-shadow: none; /* DEMO: search shadow off for recordings */
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--focus);
+    box-shadow: none; /* DEMO: search shadow off for recordings */
+}
+
+[data-theme="dark"] #searchInput {
+    box-shadow: none; /* DEMO: search shadow off for recordings */
+}
+
+[data-theme="dark"] #searchInput:focus {
+    border-color: var(--focus);
+    box-shadow: none; /* DEMO: search shadow off for recordings */
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: var(--btn-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--btn-primary-hover);
+    transform: translateY(-1px);
+    /* Centered veil reads even on all four sides. */
+    box-shadow: 0 0 8px rgba(5, 150, 105, 0.25);
+}
+
+.btn-secondary {
+    background: var(--border);
+    color: var(--text);
+}
+
+
+.btn-secondary:hover {
+    background: var(--border-strong);
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Press feedback on every clickable surface: momentary darkening in light
+   theme, lightening in dark. :active lives only while held; a single
+   brightness filter keeps it uniform without per-element tones. */
+button:active,
+.config-row:active,
+.folder-header:active,
+.registry-header:active {
+    filter: brightness(0.94);
+}
+
+[data-theme="dark"] button:active,
+[data-theme="dark"] .config-row:active,
+[data-theme="dark"] .folder-header:active,
+[data-theme="dark"] .registry-header:active {
+    filter: brightness(1.12);
+}
+
+/* Dismissing the create card swallows the press behind it entirely — not
+   even the press flash. Set for the gesture, lifted on pointerup/cancel
+   (create.js). Both themes: none is none. */
+body.swallow-press button:active,
+body.swallow-press .config-row:active,
+body.swallow-press .folder-header:active,
+body.swallow-press .registry-header:active,
+[data-theme="dark"] body.swallow-press button:active,
+[data-theme="dark"] body.swallow-press .config-row:active,
+[data-theme="dark"] body.swallow-press .folder-header:active,
+[data-theme="dark"] body.swallow-press .registry-header:active {
+    filter: none;
+}
+
+/* Floating theme toggle, always visible */
+.theme-fab {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: var(--z-fab);
+    box-shadow: none; /* DEMO: fab shadow off for recordings */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xs);
+}
+
+/* View-mode toggle: fixed above the theme button (same 32px box, 8px gap). */
+.view-fab {
+    position: fixed;
+    left: 16px;
+    bottom: 56px;
+    z-index: var(--z-fab);
+    box-shadow: none; /* DEMO: fab shadow off for recordings */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xs);
+    flex: none;
+}
+
+/* Add-key button: round 32px box; the widget owns the fixed position. */
+.create-fab {
+    z-index: var(--z-fab);
+    box-shadow: none; /* DEMO: fab shadow off for recordings */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xs);
+    flex: none;
+}
+
+.view-fab svg,
+.create-fab svg {
+    width: 16px;
+    height: 16px;
+}
+
+.btn svg,
+.copy-btn svg,
+.registry-chevron svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: var(--border-strong);
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-weight: 500;
+    font-size: 0.875rem;
+    box-shadow: var(--shadow-lg);
+    z-index: var(--z-toast);
+    animation: slideInRight 0.3s ease;
+    display: none;
+}
+
+.toast.show {
+    display: block;
+}
+
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.info { background: var(--primary); }
+
+/* Undo toasts: stacked above the regular toast corner, each with its own
+   shrinking time bar (duration comes inline from showUndoToast). */
+.undo-toasts {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: var(--z-toast);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.undo-toast {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px 16px;
+    border-radius: var(--radius-sm);
+    background: var(--text);
+    color: var(--card-bg);
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: slideInRight 0.3s ease;
+}
+
+.undo-toast .btn {
+    flex: none;
+}
+
+.undo-progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--primary);
+    transform-origin: left;
+    animation-name: undo-shrink;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes undo-shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100px); }
+    to { opacity: 1; transform: translateX(0); }
+}

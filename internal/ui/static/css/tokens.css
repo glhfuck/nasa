@@ -1,0 +1,96 @@
+:root {
+    --primary: #6366f1;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --row-bg: color-mix(in srgb, #ffffff 99%, black);
+    --folder-bg: color-mix(in srgb, color-mix(in srgb, var(--group-bg) 50%, var(--row-bg)) 99%, black);
+    --group-bg: color-mix(in srgb, var(--hover) 95%, black);
+    --group-hover: #e6ebf1;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --btn-primary: #059669;
+    --btn-primary-hover: #047857;
+    --static-white: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --shadow-group: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 6px rgba(30, 41, 59, 0.15);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+    --focus: #6366f1;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 4px;
+    --transition: all 0.2s ease;
+    --z-scrim: 900;
+    --z-fab: 1000;
+    --z-toast: 2000;
+    
+    /* Type colors */
+    --type-string: #059669;
+    --type-number: #2563eb;
+    --type-boolean: #d97706;
+    --type-array: #ec4899;
+    --type-object: #7c3aed;
+    --type-null: #64748b;
+    --type-unknown: #ef4444;
+    
+    /* State colors */
+    --state-green: #10b981;
+    --state-yellow: #f59e0b;
+    --state-gray: #64748b;
+    --state-red: #ef4444;
+
+    /* Subtle hover/header surface */
+    --hover: #f8fafc;
+}
+
+/* Theme flip is instant and simultaneous: while .theme-switch sits on
+   <html> (one frame around the data-theme change, see toggleTheme),
+   nothing animates the variable swap. !important outranks every
+   per-element transition/animation regardless of import order. */
+html.theme-switch,
+html.theme-switch *,
+html.theme-switch *::before,
+html.theme-switch *::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0c0c0e;
+    --card-bg: #131316;
+    --row-bg: #15151b;
+    --folder-bg: color-mix(in srgb, var(--group-bg) 50%, var(--row-bg));
+    --group-bg: var(--hover);
+    --group-hover: #26262e;
+    --border: #26262c;
+    --border-strong: #3f3f46;
+    --btn-primary: #059669;
+    --btn-primary-hover: #047857;
+    --static-white: #ffffff;
+    --text: #e4e4e7;
+    --text-muted: #a1a1aa;
+    --primary: #818cf8;
+    --shadow-group: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 2px 6px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
+    --focus: #a8a29e;
+    --hover: #1b1b21;
+
+    /* Type colors (vivid for dark background) */
+    --type-string: #00e676;
+    --type-number: #40c4ff;
+    --type-boolean: #ffab00;
+    --type-array: #ff4081;
+    --type-object: #7c4dff;
+    --type-null: #b3b3bb;
+    --type-unknown: #ff5252;
+
+    /* State colors (vivid for dark background) */
+    --state-green: #00e676;
+    --state-yellow: #ffab00;
+    --state-gray: #b3b3bb;
+    --state-red: #ff5252;
+}

@@ -1,0 +1,16 @@
+/example/example
+/ui/e2e/stand/stand
+*.exe
+*.test
+*.out
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,159 @@
+/* Tree view: folders, guides, indent, searching */
+
+/* Tree view folders (collapse is driven by the children wrapper below;
+   rows may carry inline display from search, so groups clip via max-height). */
+.folder-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    /* Like leaf rows: the header box itself starts further right with depth
+       (flat mode has no folders, so no default needed — --depth is always set
+       on the parent .tree-folder). */
+    margin-left: calc(var(--depth, 0) * 18px);
+    background: var(--hover);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    gap: 8px;
+    transition: filter 0.15s ease;
+}
+
+.folder-header:hover {
+    background: #edf0f4;
+    background: color-mix(in srgb, color-mix(in srgb, var(--group-hover) 50%, var(--hover)) 99%, black);
+}
+
+.tree-folder.collapsed .registry-chevron {
+    transform: rotate(-90deg);
+}
+
+/* Sliding open/close: the children wrapper animates grid rows 0fr<->1fr,
+   which follows true content height (unlike max-height caps or discrete
+   display flips). The inner clips and collapses fully. */
+.tree-view .tree-folder > .tree-kids {
+    display: grid;
+    grid-template-rows: 1fr;
+    /* Base pace; toggleFolder scales transition-duration inline by
+       content height (big folders get more time), which wins over
+       both rules below. The open/close split only matters pre-first-toggle:
+       the transition in effect after the change governs. */
+    transition: grid-template-rows 0.36s ease;
+    position: relative;
+}
+
+.tree-view .tree-folder.collapsed > .tree-kids {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.16s ease;
+}
+
+.tree-view .tree-folder > .tree-kids > .tree-kids-inner {
+    overflow: hidden;
+    min-height: 0;
+    /* Positioned so boxes paint above the indent guide (::before). */
+    position: relative;
+}
+
+/* State counters appear only on collapsed folder headers (direct child:
+   a collapsed subfolder inside an expanded parent keeps its own badges). */
+.tree-folder:not(.collapsed) > .folder-header .state-badge {
+    display: none;
+}
+
+/* Key counter likewise (same direct-child scope: collapsed subfolders
+   inside an expanded parent keep their own counts). */
+.tree-folder:not(.collapsed) > .folder-header .registry-count {
+    display: none;
+}
+
+/* Collapsed registry groups hide tree folders too (same max-height trick
+   as rows: folders may carry inline display from search). */
+.registry-group.collapsed .tree-folder {
+    max-height: 0;
+    min-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    transition: max-height 0.16s ease, min-height 0.16s ease, opacity 0.12s ease, padding 0.14s ease, background-color 0.2s ease;
+}
+
+/* Tree view: the row box itself starts further right with depth, stripe on
+   its own edge. The key column shrinks by the same step, so the badge and
+   value columns stay at identical x across all depths. Flat mode never sets
+   --depth (default 0): no margin, full 280px key column. */
+.tree-view .config-row {
+    margin-left: calc(var(--depth, 0) * 18px);
+    grid-template-columns: calc(280px - var(--depth, 0) * 18px) 132px 1fr;
+}
+
+/* Tree view two-tone: the indent gutter shows the page background while rows
+   keep their own color. Folder headers sit midway between groups and rows.
+   Flat mode is untouched. */
+.tree-view .folder-header {
+    /* Midpoint between group base and row base (light: darkened 5%).
+       Plain var(--hover) first for old browsers. */
+    background: var(--hover);
+    background: var(--folder-bg);
+}
+
+.tree-view .folder-header .registry-name {
+    font-size: 0.8rem;
+}
+
+.tree-view .folder-header:hover {
+    background: #edf0f4;
+    background: color-mix(in srgb, color-mix(in srgb, var(--group-hover) 50%, var(--hover)) 99%, black);
+}
+
+[data-theme="dark"] .tree-view .folder-header:hover {
+    background: var(--hover);
+    background: color-mix(in srgb, var(--group-hover) 50%, var(--hover));
+}
+
+/* Indent guides: each folder draws a dotted line at its own indent.
+   Living on the children wrapper, they slide with open/close. */
+.tree-view .tree-folder > .tree-kids::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--depth, 0) * 18px);
+    border-left: 1px dotted var(--border);
+    pointer-events: none;
+}
+
+/* Tree view: wrappers (.tree-folder, .registry-group) are full-width and
+   transparent — their own bottom borders would cut across the indent zone
+   at the old full-width position. Dividers stay on the boxes themselves
+   (headers and rows), so restore the row border dropped for the wrapper. */
+.tree-view .tree-folder,
+.tree-view .registry-group {
+    border-bottom: none;
+}
+
+.tree-view .config-row:last-child {
+    border-bottom: 1px solid var(--border);
+}
+
+/* The group's last visible row drops its own border: the card edge draws the
+   line, otherwise content gets a doubled (thick) line while the gutter shows
+   a single one. Assigned in JS (markLastLines) since nesting and search
+   filtering decide which row is last. */
+.config-row.no-bottom,
+.tree-view .config-row.no-bottom,
+.folder-header.no-bottom,
+.registry-header.no-bottom {
+    border-bottom: none;
+}
+
+
+[data-theme="dark"] .folder-header:hover {
+    background: var(--hover);
+    background: color-mix(in srgb, var(--group-hover) 50%, var(--hover));
+}
